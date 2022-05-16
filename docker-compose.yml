@@ -14,3 +14,11 @@ services:
     network_mode: "host"
     labels:
       io.balena.features.kernel-modules: '1'
+  led:
+    build: ./actor_led
+    restart: unless-stopped
+    privileged: true
+    network_mode: "host"
+    labels:
+      io.balena.features.kernel-modules: '1'
+
