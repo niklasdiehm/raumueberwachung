@@ -7,3 +7,10 @@ services:
     network_mode: "host"
     labels:
       io.balena.features.kernel-modules: '1'
+  buzzer:
+    build: ./actor_buzzer
+    restart: unless-stopped
+    privileged: true
+    network_mode: "host"
+    labels:
+      io.balena.features.kernel-modules: '1'
