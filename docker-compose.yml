@@ -1,0 +1,9 @@
+version: '2'
+services:
+  sensor_temperature:
+    build: ./sensor_temperature
+    restart: unless-stopped
+    privileged: true
+    network_mode: "host"
+    labels:
+      io.balena.features.kernel-modules: '1'
