@@ -9,16 +9,22 @@ services:
       io.balena.features.kernel-modules: '1'
   buzzer:
     build: ./actor_buzzer
-    restart: unless-stopped
+    restart: no
     privileged: true
     network_mode: "host"
     labels:
       io.balena.features.kernel-modules: '1'
   led:
     build: ./actor_led
-    restart: unless-stopped
+    restart: no
     privileged: true
     network_mode: "host"
     labels:
       io.balena.features.kernel-modules: '1'
-
+  sensor_microphone:
+    build: ./sensor_microphone
+    restart: no
+    privileged: true
+    network_mode: "host"
+    labels:
+      io.balena.features.kernel-modules: '1'
