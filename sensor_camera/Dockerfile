@@ -32,5 +32,6 @@ RUN pip3 install opencv-contrib-python-headless==4.5.3.56
 RUN pip3 install --upgrade numpy
 
 COPY ./camera.py /usr/src/app/camera.py
+COPY ./models /usr/src/app/models/
 
 CMD ["python3", "/usr/src/app/camera.py"]
