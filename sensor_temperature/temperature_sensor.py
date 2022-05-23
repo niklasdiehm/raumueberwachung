@@ -1,25 +1,43 @@
 import time
 import board
 import adafruit_dht
+import requests
+import os
+from datetime import datetime
+from datetime import timezone
 
-# Initialisieren Sie das dht-Gerät, wobei der Datenpin mit Pin 16 (GPIO 23) des Raspberry Pi verbunden ist:
+# Initialize device
 dhtDevice = adafruit_dht.DHT11(board.D23, use_pulseio=False)
 
-# Sie können DHT22 use_pulseio=False übergeben, wenn Sie pulseio nicht verwenden möchten.
-# Dies kann auf einem Linux-Einplatinencomputer wie dem Raspberry Pi notwendig sein,
-# aber es wird nicht in CircuitPython funktionieren.
-# dhtDevice = adafruit_dht.DHT22(board.D18, use_pulseio=False)
+# Retrieve environment variables
+middleware_url = os.environ.get("MIDDLEWARE_URL")
+middleware_api_key = os.environ.get("MIDDLEWARE_API_KEY")
+device_id = os.environ.get("RESIN_DEVICE_UUID")
 
 while True:
     try:
-        # Drucken der Werte über die serielle Schnittstelle
+        # Reading temerpature and humidity
         temperature_c = dhtDevice.temperature
-        temperature_f = temperature_c * (9 / 5) + 32
-        humidity = dhtDevice.humidity
-        print("Temp: {:.1f} F / {:.1f} C    Humidity: {}% ".format(temperature_f, temperature_c, humidity))
+        humidity = dhtDevice.humidity / 100
+        data = {
+            "deviceID": device_id,
+            "measurement": "currentTemperature",
+            "value": temperature_c,
+            "timestamp": datetime.now(timezone.utc)
+            .strftime("%Y-%m-%d %H:%M:%S")
+        }
+        # Send temperature and humidity to middleware
+        requests.post(middleware_url+"?code="+middleware_api_key, json=data)
+        data["measurement"] = "currentHumidity"
+        data["value"] = humidity
+        requests.post(middleware_url+"?code="+middleware_api_key, json=data)
+        # Print temperature and humidity on command line
+        print("Temp: {temperature_c}".format(temperature_c=temperature_c))
+        print("Humidity: {humidity}% ".format(humidity=humidity))
 
     except RuntimeError as error:
-        # Fehler passieren ziemlich oft, DHT's sind schwer zu lesen, einfach weitermachen
+        # if an error occurs while reading the temperature, try again
+        # after one second
         print(error.args[0])
         time.sleep(2.0)
         continue
@@ -27,5 +45,5 @@ while True:
         print(error.args[0])
         dhtDevice.exit()
         raise error
-
-    time.sleep(2.0)
+    # if sucessful, wait for 60 seconds before next measurement
+    time.sleep(60.0)
