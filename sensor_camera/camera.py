@@ -102,6 +102,8 @@ class Utils:
 middleware_url = os.environ.get("MIDDLEWARE_URL")
 middleware_api_key = os.environ.get("MIDDLEWARE_API_KEY")
 device_id = os.environ.get("RESIN_DEVICE_UUID")
+room_name = os.environ.get("ROOM_NAME")
+measurement_interval_secs = int(os.environ.get("MEASUREMENT_INTERVAL_SECS"))
 
 proto_file = r"./models/mobilenet.prototxt"
 model_file = r"./models/mobilenet.caffemodel"
@@ -133,11 +135,12 @@ try:
             "measurement": "currentPersonCount",
             "value": person_count,
             "timestamp": datetime.now(timezone.utc)
-            .strftime("%Y-%m-%d %H:%M:%S")
+            .strftime("%Y-%m-%d %H:%M:%S"),
+            "roomName": room_name
         }
         requests.post(middleware_url+"?code="+middleware_api_key, json=data)
         print("Person count on the frame: "+str(person_count))
-        time.sleep(60)
+        time.sleep(measurement_interval_secs)
 except Exception:
     # release camera
     cap.release()

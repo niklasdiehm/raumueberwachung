@@ -21,11 +21,13 @@ chan = AnalogIn(ads, ADS.P0)
 middleware_url = os.environ.get("MIDDLEWARE_URL")
 middleware_api_key = os.environ.get("MIDDLEWARE_API_KEY")
 device_id = os.environ.get("RESIN_DEVICE_UUID")
+room_name = os.environ.get("ROOM_NAME")
+measurement_interval_secs = int(os.environ.get("MEASUREMENT_INTERVAL_SECS"))
 
 while True:
     values = []
     voltages = []
-    for _ in range(120):
+    for _ in range(measurement_interval_secs * 2):
         values.append(chan.value)
         voltages.append(chan.voltage)
         time.sleep(0.5)
@@ -39,6 +41,7 @@ while True:
         "measurement": "currentVolume",
         "value": average_decibel,
         "timestamp": datetime.now(timezone.utc)
-        .strftime("%Y-%m-%d %H:%M:%S")
+        .strftime("%Y-%m-%d %H:%M:%S"),
+        "roomName": room_name
     }
     requests.post(middleware_url+"?code="+middleware_api_key, json=data)

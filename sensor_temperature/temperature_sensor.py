@@ -13,6 +13,8 @@ dhtDevice = adafruit_dht.DHT11(board.D23, use_pulseio=False)
 middleware_url = os.environ.get("MIDDLEWARE_URL")
 middleware_api_key = os.environ.get("MIDDLEWARE_API_KEY")
 device_id = os.environ.get("RESIN_DEVICE_UUID")
+room_name = os.environ.get("ROOM_NAME")
+measurement_interval_secs = int(os.environ.get("MEASUREMENT_INTERVAL_SECS"))
 
 while True:
     try:
@@ -24,7 +26,8 @@ while True:
             "measurement": "currentTemperature",
             "value": temperature_c,
             "timestamp": datetime.now(timezone.utc)
-            .strftime("%Y-%m-%d %H:%M:%S")
+            .strftime("%Y-%m-%d %H:%M:%S"),
+            "roomName": room_name
         }
         # Send temperature and humidity to middleware
         requests.post(middleware_url+"?code="+middleware_api_key, json=data)
@@ -46,4 +49,4 @@ while True:
         dhtDevice.exit()
         raise error
     # if sucessful, wait for 60 seconds before next measurement
-    time.sleep(60.0)
+    time.sleep(measurement_interval_secs)
