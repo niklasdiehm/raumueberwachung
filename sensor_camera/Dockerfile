@@ -27,7 +27,7 @@ WORKDIR /usr/src/app
 
 RUN pip3 install --upgrade pip
 
-RUN pip3 install opencv-contrib-python-headless==4.5.3.56
+RUN pip3 install opencv-contrib-python-headless==4.5.3.56 requests
 
 RUN pip3 install --upgrade numpy
 

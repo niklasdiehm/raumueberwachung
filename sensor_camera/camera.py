@@ -1,8 +1,11 @@
 import numpy.core.multiarray
 import numpy as np
 import cv2
+import requests
 import time
 import os
+from datetime import datetime
+from datetime import timezone
 
 
 class CaffeModelLoader:
@@ -95,11 +98,15 @@ class Utils:
             Utils.draw_object(obj, label, color, frame)
 
 
+# Retrieve environment variables
+middleware_url = os.environ.get("MIDDLEWARE_URL")
+middleware_api_key = os.environ.get("MIDDLEWARE_API_KEY")
+device_id = os.environ.get("RESIN_DEVICE_UUID")
+
 proto_file = r"./models/mobilenet.prototxt"
 model_file = r"./models/mobilenet.caffemodel"
 ssd_net = CaffeModelLoader.load(proto_file, model_file)
 print("Caffe model loaded from: "+model_file)
-
 proc_frame_size = 300
 # frame processor for MobileNet
 ssd_proc = FrameProcessor(proc_frame_size, 1.0/127.5, 127.5)
@@ -112,18 +119,25 @@ cap = cv2.VideoCapture('/dev/video0', cv2.CAP_V4L)
 # set dimensions
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 2560)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1440)
-# take frame
-ret, frame = cap.read()
-# release camera
-cap.release()
 
-obj_data = ssd.detect(frame)
-persons = ssd.get_objects(frame, obj_data, person_class, 0.5)
-print(persons)
-person_count = len(persons)
-print("Person count on the frame: "+str(person_count))
-Utils.draw_objects(persons, "PERSON", (0, 0, 255), frame)
-
-cv2.imwrite("image.jpg", frame)
-while True:
-    time.sleep(1)
+try:
+    while True:
+        # take frame
+        ret, frame = cap.read()
+        obj_data = ssd.detect(frame)
+        persons = ssd.get_objects(frame, obj_data, person_class, 0.5)
+        print(persons)
+        person_count = len(persons)
+        data = {
+            "deviceID": device_id,
+            "measurement": "currentPersonCount",
+            "value": person_count,
+            "timestamp": datetime.now(timezone.utc)
+            .strftime("%Y-%m-%d %H:%M:%S")
+        }
+        requests.post(middleware_url+"?code="+middleware_api_key, json=data)
+        print("Person count on the frame: "+str(person_count))
+        time.sleep(60)
+except Exception:
+    # release camera
+    cap.release()
