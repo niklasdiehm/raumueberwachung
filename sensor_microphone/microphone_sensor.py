@@ -38,8 +38,8 @@ while True:
     print("{:>5} decibel".format(average_decibel))
     data = {
         "deviceID": device_id,
-        "measurement": "currentVolume",
-        "value": average_decibel,
+        "measurementName": "currentVolume",
+        "measurementValue": average_decibel,
         "timestamp": datetime.now(timezone.utc)
         .strftime("%Y-%m-%d %H:%M:%S"),
         "roomName": room_name

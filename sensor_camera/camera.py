@@ -132,8 +132,8 @@ try:
         person_count = len(persons)
         data = {
             "deviceID": device_id,
-            "measurement": "currentPersonCount",
-            "value": person_count,
+            "measurementName": "currentPersonCount",
+            "measurementValue": person_count,
             "timestamp": datetime.now(timezone.utc)
             .strftime("%Y-%m-%d %H:%M:%S"),
             "roomName": room_name

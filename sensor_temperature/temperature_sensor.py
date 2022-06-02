@@ -23,16 +23,16 @@ while True:
         humidity = dhtDevice.humidity / 100
         data = {
             "deviceID": device_id,
-            "measurement": "currentTemperature",
-            "value": temperature_c,
+            "measurementName": "currentTemperature",
+            "measurementValue": temperature_c,
             "timestamp": datetime.now(timezone.utc)
             .strftime("%Y-%m-%d %H:%M:%S"),
             "roomName": room_name
         }
         # Send temperature and humidity to middleware
         requests.post(middleware_url+"?code="+middleware_api_key, json=data)
-        data["measurement"] = "currentHumidity"
-        data["value"] = humidity
+        data["measurementName"] = "currentHumidity"
+        data["measurementValue"] = humidity
         requests.post(middleware_url+"?code="+middleware_api_key, json=data)
         # Print temperature and humidity on command line
         print("Temp: {temperature_c}".format(temperature_c=temperature_c))
