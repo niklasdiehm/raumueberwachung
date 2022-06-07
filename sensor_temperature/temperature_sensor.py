@@ -32,11 +32,11 @@ while True:
         # Send temperature and humidity to middleware
         requests.post(middleware_url+"?code="+middleware_api_key, json=data)
         data["measurementName"] = "currentHumidity"
-        data["measurementValue"] = humidity
+        data["measurementValue"] = humidity * 100
         requests.post(middleware_url+"?code="+middleware_api_key, json=data)
         # Print temperature and humidity on command line
         print("Temp: {temperature_c}".format(temperature_c=temperature_c))
-        print("Humidity: {humidity}% ".format(humidity=humidity))
+        print("Humidity: {humidity}% ".format(humidity=humidity*100))
 
     except RuntimeError as error:
         # if an error occurs while reading the temperature, try again
@@ -48,5 +48,5 @@ while True:
         print(error.args[0])
         dhtDevice.exit()
         raise error
-    # if sucessful, wait for 60 seconds before next measurement
+    # if sucessful, wait for measurement interval seconds before next measurement
     time.sleep(measurement_interval_secs)

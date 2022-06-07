@@ -104,6 +104,7 @@ middleware_api_key = os.environ.get("MIDDLEWARE_API_KEY")
 device_id = os.environ.get("RESIN_DEVICE_UUID")
 room_name = os.environ.get("ROOM_NAME")
 measurement_interval_secs = int(os.environ.get("MEASUREMENT_INTERVAL_SECS"))
+maximum_capacity = int(os.environ.get("MAXIMUM_CAPACITY"))
 
 proto_file = r"./models/mobilenet.prototxt"
 model_file = r"./models/mobilenet.caffemodel"
@@ -139,7 +140,16 @@ try:
             "roomName": room_name
         }
         requests.post(middleware_url+"?code="+middleware_api_key, json=data)
+        data = {
+            "deviceID": device_id,
+            "measurementName": "maximumCapacity",
+            "measurementValue": maximum_capacity,
+            "timestamp": datetime.now(timezone.utc)
+            .strftime("%Y-%m-%d %H:%M:%S"),
+            "roomName": room_name
+        }
         print("Person count on the frame: "+str(person_count))
+        print("Maximum capacity: "+str(maximum_capacity))
         time.sleep(measurement_interval_secs)
 except Exception:
     # release camera
