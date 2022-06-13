@@ -14,7 +14,7 @@ RUN apt-get update && \
 
 RUN pip3 install --upgrade pip 
 
-RUN pip3 install pip install RPi.GPIO
+RUN pip3 install pip install RPi.GPIO requests
 
 WORKDIR /usr/src/app
 
