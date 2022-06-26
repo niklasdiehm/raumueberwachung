@@ -105,6 +105,7 @@ device_id = os.environ.get("RESIN_DEVICE_UUID")
 room_name = os.environ.get("ROOM_NAME")
 measurement_interval_secs = int(os.environ.get("MEASUREMENT_INTERVAL_SECS"))
 maximum_capacity = int(os.environ.get("MAXIMUM_CAPACITY"))
+save_image = os.environ.get("SAVE_IMAGE")
 
 proto_file = r"./models/mobilenet.prototxt"
 model_file = r"./models/mobilenet.caffemodel"
@@ -131,12 +132,12 @@ try:
         persons = ssd.get_objects(frame, obj_data, person_class, 0.5)
         print(persons)
         person_count = len(persons)
+        timestamp = datetime.now(timezone.utc)
         data = {
             "deviceID": device_id,
             "measurementName": "currentPersonCount",
             "measurementValue": person_count,
-            "timestamp": datetime.now(timezone.utc)
-            .strftime("%Y-%m-%d %H:%M:%S"),
+            "timestamp": timestamp.strftime("%Y-%m-%d %H:%M:%S"),
             "roomName": room_name
         }
         requests.post(middleware_url+"?code="+middleware_api_key, json=data)
@@ -144,12 +145,15 @@ try:
             "deviceID": device_id,
             "measurementName": "maximumCapacity",
             "measurementValue": maximum_capacity,
-            "timestamp": datetime.now(timezone.utc)
-            .strftime("%Y-%m-%d %H:%M:%S"),
+            "timestamp": timestamp.strftime("%Y-%m-%d %H:%M:%S"),
             "roomName": room_name
         }
         print("Person count on the frame: "+str(person_count))
         print("Maximum capacity: "+str(maximum_capacity))
+        if save_image == "1":
+            cv2.imwrite("/tmp/frame" +
+                        timestamp.strftime("%Y-%m-%d %H:%M:%S") +
+                        ".jpg", frame)
         time.sleep(measurement_interval_secs)
 except Exception:
     # release camera
