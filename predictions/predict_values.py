@@ -14,11 +14,11 @@ def main():
     split_date = '04-Jul_2022'
     days_to_forecast = 7
     timestamp_column = 'timestamp_new'
-    value_column = 'personCount'
+    value_column = 'humidity'
     middleware_url = "https://fa-roomitor.azurewebsites.net/api/predictions"
-    middleware_api_key = "VOXG7U915GhnWo1dRCd-wuNrhgM897uDp4Lae4-kTKZCAzFu7O0DIA=="
+    middleware_api_key = "jFLb8RMOvFF-mateBHFM89v4upNQ583Z5l60zxmorSHSAzFufLir6w=="
     deviceID = "2187733e6049fabe904a1a730fe7c457"
-    measurementName = "personCount"
+    measurementName = "humidity"
     roomName = "A457"
     data = pd.read_excel(file_name)
     grouped_data = create_new_dataframe_grouped_with_index(data, timestamp_column, value_column)
@@ -41,6 +41,7 @@ def create_new_dataframe_grouped_with_index(dataframe, timestamp_column, value_c
     new_dataframe = new_dataframe.set_index(timestamp_column)
     return new_dataframe
 
+
 def split_data(dataframe, split_date):
     split_date = '03-Jul-2022'
     train_data = dataframe.loc[dataframe.index <= split_date].copy()
@@ -62,16 +63,16 @@ def predict_values(model, days=7):
 
 def upload_predictions(predictions, deviceID, measurementName, roomName, middleware_url, middleware_api_key):
     print(predictions.head())
-    return None
     for _, row in tqdm(predictions.iterrows(), total=predictions.shape[0]):
         data = {
             "deviceID": deviceID,
-            "measurementName": measurementName,
-            "measurementValue": row["yhat"],
+            "predictionName": measurementName,
+            "predictionValue": row["yhat"],
             "timestamp": row["ds"].strftime("%Y-%m-%d %H:%M:%S"),
             "roomName": roomName
         }
-        requests.post(middleware_url+"?code="+middleware_api_key, json=data)
+        request = requests.post(middleware_url+"?code="+middleware_api_key, json=data)
+        print(request)
 
 
 if __name__ == '__main__':
