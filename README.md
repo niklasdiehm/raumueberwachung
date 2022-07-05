@@ -5,6 +5,11 @@ für die einzelnen Aktoren und Sensoren. Pro Service ist ein Dockerfile vorhande
 Container starten kann, wird in der Datei "docker-compose.yml" jeder Service eingetragen. In der Datei "balena.yml" sind einige Konfigurationen, welche
 für die balenaCloud essentiell sind, definiert.
 
+# Zugangsdaten balenaCloud:
+
+E-Mail: fikode1073@hekarro.com
+Passwort: IoTWWI19!
+
 # Gerät in der balenaCloud registrieren
 
 Um ein Gerät in der balenaCloud zu registrieren, muss innerhalb der existierenden Fleet "Raumueberwachung" unter "Devices" auf "Add device" geklickt werden.
