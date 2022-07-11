@@ -43,7 +43,6 @@ def create_new_dataframe_grouped_with_index(dataframe, timestamp_column, value_c
 
 
 def split_data(dataframe, split_date):
-    split_date = '03-Jul-2022'
     train_data = dataframe.loc[dataframe.index <= split_date].copy()
     test_data = dataframe.loc[dataframe.index > split_date].copy()
     return train_data, test_data
